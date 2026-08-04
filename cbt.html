@@ -1,0 +1,477 @@
+<!-- ========================================== -->
+<!-- FILE 2: exam.html (CBT Exam Body & Result) -->
+<!-- ========================================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GET IT RIGHT CBT Examination</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background-color: #32cd32; /* Lemon Green */
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid #ff8c00; /* Orange */
+    }
+    header h2 {
+      font-size: 20px;
+    }
+    .timer-box {
+      background-color: #ff8c00; /* Orange */
+      color: white;
+      padding: 8px 15px;
+      border-radius: 4px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .cbt-container {
+      max-width: 1100px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      display: flex;
+      gap: 20px;
+    }
+    .question-section {
+      flex: 3;
+    }
+    .grid-section {
+      flex: 1;
+      border-left: 2px solid #eee;
+      padding-left: 15px;
+    }
+    .question-header {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ff8c00;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #32cd32;
+    }
+    .question-text {
+      font-size: 16px;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    .options-list label {
+      display: block;
+      background: #fdfdfd;
+      border: 1px solid #ccc;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .options-list label:hover {
+      border-color: #32cd32;
+      background-color: #f4fff4;
+    }
+    .options-list input {
+      margin-right: 10px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-prev {
+      background-color: #666;
+      color: white;
+    }
+    .btn-next {
+      background-color: #ff8c00;
+      color: white;
+    }
+    .btn-submit {
+      background-color: #32cd32;
+      color: white;
+    }
+    .btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .grid-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .num-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .num-btn {
+      padding: 8px 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .num-btn.answered {
+      background-color: #32cd32;
+      color: white;
+      border-color: #32cd32;
+    }
+    .num-btn.active {
+      border: 2px solid #ff8c00;
+    }
+    
+    /* Result Section */
+    #result-screen {
+      display: none;
+      max-width: 800px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border: 2px solid #32cd32;
+      border-radius: 8px;
+    }
+    .result-header {
+      text-align: center;
+      border-bottom: 3px solid #ff8c00;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .result-header h1 {
+      color: #32cd32;
+      font-size: 24px;
+    }
+    .result-details {
+      margin-bottom: 20px;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+    .result-score {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ff8c00;
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #fff8f0;
+      border: 1px dashed #ff8c00;
+    }
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    .breakdown-table th, .breakdown-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    .breakdown-table th {
+      background-color: #32cd32;
+      color: white;
+    }
+    .print-btn {
+      display: block;
+      width: 100%;
+      background-color: #ff8c00;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #result-screen, #result-screen * {
+        visibility: visible;
+      }
+      #result-screen {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: none;
+      }
+      .print-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header id="exam-header">
+  <h2>GET IT RIGHT CBT EXAMINATION</h2>
+  <a href="sign.html"  class="timer-box">Log out</a>
+  <div class="timer-box">Time Left: <span id="time-display">30:00</span>
+  </div>
+
+</header>
+
+<div class="cbt-container" id="exam-screen">
+  <div class="question-section">
+    <div class="question-header">Question <span id="q-num">1</span> of 40</div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options-list" id="options-container"></div>
+    
+    <div class="nav-buttons">
+      <button class="btn btn-prev" id="prev-btn" onclick="prevQuestion()">Previous</button>
+      <button class="btn btn-next" id="next-btn" onclick="nextQuestion()">Next</button>
+      <button class="btn btn-submit" id="submit-btn" onclick="submitExam()">Submit Exam</button>
+    </div>
+  </div>
+
+  <div class="grid-section">
+    <div class="grid-title">Question Palette</div>
+    <div class="num-grid" id="grid-container"></div>
+  </div>
+</div>
+
+<div id="result-screen">
+  <div class="result-header">
+    <h1>GET IT RIGHT CBT</h1>
+    <p>Official Examination Result Slip</p>
+  </div>
+  
+  <div class="result-details">
+    <p><strong>Candidate Name:</strong> <span id="res-fullname">Loading...</span></p>
+    <p><strong>Registration Number:</strong> <span id="res-regno">Loading...</span></p>
+    <p><strong>Email Address:</strong> <span id="res-email">Loading...</span></p>
+    <p><strong>Examination:</strong> General Paper Test (40 Questions)</p>
+  </div>
+
+  <div class="result-score" id="final-score-box"></div>
+
+  <table class="breakdown-table">
+    <thead>
+      <tr>
+        <th>Subject / Unit</th>
+        <th>Total Questions</th>
+        <th>Correct</th>
+        <th>Wrong</th>
+        <th>Score Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>General Knowledge & Science</td>
+        <td>40</td>
+        <td id="correct-count">0</td>
+        <td id="wrong-count">0</td>
+        <td id="score-percent">0%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="print-btn" onclick="window.print()">Print Result Slip</button>
+</div>
+
+<script>
+  let currentUser = JSON.parse(localStorage.getItem("cbt_current_user"));
+
+  if (!currentUser) {
+    alert("Please login first!");
+    window.location.href = "index.html";
+  }
+
+  let questions = [
+    { question: "Which organ in the human body pumps blood?", options: ["Brain", "Heart", "Lungs", "Liver"], answer: 1 },
+    { question: "What is the capital city of Nigeria?", options: ["Lagos", "Kano", "Abuja", "Ibadan"], answer: 2 },
+    { question: "Which element is needed for human respiration?", options: ["Nitrogen", "Carbon Dioxide", "Oxygen", "Hydrogen"], answer: 2 },
+    { question: "How many sides does a hexagon have?", options: ["5", "6", "7", "8"], answer: 1 },
+    { question: "Which process do plants use to make food?", options: ["Respiration", "Photosynthesis", "Digestion", "Transpiration"], answer: 1 },
+    { question: "What is the boiling point of water at sea level?", options: ["50°C", "80°C", "100°C", "120°C"], answer: 2 },
+    { question: "Who was the first President of Nigeria?", options: ["Obafemi Awolowo", "Nnamdi Azikiwe", "Tafawa Balewa", "Ahmadu Bello"], answer: 1 },
+    { question: "Which gas is most abundant in Earth's atmosphere?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Helium"], answer: 1 },
+    { question: "What is the chemical symbol for Gold?", options: ["Ag", "Fe", "Au", "Pb"], answer: 2 },
+    { question: "Which continent is the largest by land area?", options: ["Africa", "Asia", "North America", "Europe"], answer: 1 },
+    { question: "What is the main source of light for Earth?", options: ["Moon", "Stars", "Sun", "Lightning"], answer: 2 },
+    { question: "How many primary colors are there?", options: ["2", "3", "4", "5"], answer: 1 },
+    { question: "Which instrument is used to measure temperature?", options: ["Barometer", "Thermometer", "Speedometer", "Anemometer"], answer: 1 },
+    { question: "What is the center of an atom called?", options: ["Electron", "Proton", "Nucleus", "Neutron"], answer: 2 },
+    { question: "Which planet is known as the Red Planet?", options: ["Venus", "Jupiter", "Mars", "Saturn"], answer: 2 },
+    { question: "What system controls all activities in the human body?", options: ["Nervous System", "Digestive System", "Circulatory System", "Excretory System"], answer: 0 },
+    { question: "Which state in Nigeria is known as the Centre of Commerce?", options: ["Abuja", "Kano", "Lagos", "Ogun"], answer: 1 },
+    { question: "What is the hardest natural substance on Earth?", options: ["Gold", "Iron", "Diamond", "Granite"], answer: 2 },
+    { question: "How many teeth does an adult human normally have?", options: ["28", "30", "32", "36"], answer: 2 },
+    { question: "What force pulls objects toward the Earth?", options: ["Friction", "Gravity", "Magnetism", "Tension"], answer: 1 },
+    { question: "Which part of a plant absorbs water from the soil?", options: ["Leaves", "Stem", "Roots", "Flowers"], answer: 2 },
+    { question: "What color is chlorophyll?", options: ["Red", "Yellow", "Green", "Blue"], answer: 2 },
+    { question: "Which shape has three sides?", options: ["Square", "Triangle", "Rectangle", "Circle"], answer: 1 },
+    { question: "What is the closest planet to the Sun?", options: ["Earth", "Venus", "Mercury", "Mars"], answer: 2 },
+    { question: "Which currency is used in Nigeria?", options: ["Cedi", "Naira", "Dollar", "Pound"], answer: 1 },
+    { question: "What is the main gas released when humans exhale?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], answer: 2 },
+    { question: "How many hours make one full day?", options: ["12", "24", "48", "60"], answer: 1 },
+    { question: "Which animal is known as the King of the Jungle?", options: ["Elephant", "Tiger", "Lion", "Leopard"], answer: 2 },
+    { question: "What device is used to perform high-speed computations?", options: ["Calculator", "Computer", "Typewriter", "Television"], answer: 1 },
+    { question: "Which ocean is the largest on Earth?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], answer: 3 },
+    { question: "What is the standard unit for measuring mass?", options: ["Litre", "Metre", "Kilogram", "Second"], answer: 2 },
+    { question: "Which blood cells help fight infections?", options: ["Red Blood Cells", "White Blood Cells", "Platelets", "Plasma"], answer: 1 },
+    { question: "Which vitamin is obtained naturally from sunlight?", options: ["Vitamin A", "Vitamin C", "Vitamin D", "Vitamin K"], answer: 2 },
+    { question: "What is the square root of 64?", options: ["6", "7", "8", "9"], answer: 2 },
+    { question: "Which state in Nigeria has the nickname 'Sunshine State'?", options: ["Ondo", "Oyo", "Osun", "Ekiti"], answer: 0 },
+    { question: "Which geometric angle is exactly 90 degrees?", options: ["Acute Angle", "Obtuse Angle", "Right Angle", "Reflex Angle"], answer: 2 },
+    { question: "What is the study of living things called?", options: ["Physics", "Chemistry", "Biology", "Geology"], answer: 2 },
+    { question: "Which device is used to break or complete a circuit?", options: ["Resistor", "Switch", "Battery", "Wire"], answer: 1 },
+    { question: "What is the process of water changing into gas called?", options: ["Condensation", "Evaporation", "Freezing", "Melting"], answer: 1 },
+    { question: "How many years make a century?", options: ["10", "50", "100", "1000"], answer: 2 }
+  ];
+
+  let currentQuestionIndex = 0;
+  let userAnswers = new Array(40).fill(null);
+  let totalTime = 30 * 60; // 30 minutes
+  let timerInterval;
+
+  function startTimer() {
+    timerInterval = setInterval(function() {
+      totalTime--;
+      let minutes = Math.floor(totalTime / 60);
+      let seconds = totalTime % 60;
+      
+      if (seconds < 10) seconds = "0" + seconds;
+      if (minutes < 10) minutes = "0" + minutes;
+      
+      document.getElementById("time-display").innerText = minutes + ":" + seconds;
+
+      if (totalTime <= 0) {
+        clearInterval(timerInterval);
+        alert("Time is up! Your exam will be submitted automatically.");
+        submitExam();
+      }
+    }, 1000);
+  }
+
+  function renderGrid() {
+    let gridContainer = document.getElementById("grid-container");
+    let gridHtml = "";
+    for (let i = 0; i < questions.length; i++) {
+      let isAnswered = userAnswers[i] !== null ? "answered" : "";
+      let isActive = i === currentQuestionIndex ? "active" : "";
+      gridHtml += `<button class="num-btn ${isAnswered} ${isActive}" onclick="jumpToQuestion(${i})">${i + 1}</button>`;
+    }
+    gridContainer.innerHTML = gridHtml;
+  }
+
+  function displayQuestion() {
+    let q = questions[currentQuestionIndex];
+    document.getElementById("q-num").innerText = currentQuestionIndex + 1;
+    document.getElementById("question-text").innerText = (currentQuestionIndex + 1) + ". " + q.question;
+
+    let optionsHtml = "";
+    let optionLetters = ["A", "B", "C", "D"];
+    for (let i = 0; i < q.options.length; i++) {
+      let isChecked = userAnswers[currentQuestionIndex] === i ? "checked" : "";
+      optionsHtml += `
+        <label>
+          <input type="radio" name="option" value="${i}" ${isChecked} onclick="selectAnswer(${i})">
+          <strong>${optionLetters[i]}.</strong> ${q.options[i]}
+        </label>`;
+    }
+    document.getElementById("options-container").innerHTML = optionsHtml;
+
+    if (currentQuestionIndex === 0) {
+      document.getElementById("prev-btn").disabled = true;
+    } else {
+      document.getElementById("prev-btn").disabled = false;
+    }
+
+    if (currentQuestionIndex === questions.length - 1) {
+      document.getElementById("next-btn").style.display = "none";
+    } else {
+      document.getElementById("next-btn").style.display = "inline-block";
+    }
+
+    renderGrid();
+  }
+
+  function selectAnswer(optionIndex) {
+    userAnswers[currentQuestionIndex] = optionIndex;
+    renderGrid();
+  }
+
+  function nextQuestion() {
+    if (currentQuestionIndex < questions.length - 1) {
+      currentQuestionIndex++;
+      displayQuestion();
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      displayQuestion();
+    }
+  }
+
+  function jumpToQuestion(index) {
+    currentQuestionIndex = index;
+    displayQuestion();
+  }
+
+  function submitExam() {
+    if (totalTime > 0) {
+      let confirmSubmit = confirm("Are you sure you want to submit your exam?");
+      if (!confirmSubmit) return;
+    }
+
+    clearInterval(timerInterval);
+
+    let correct = 0;
+    let wrong = 0;
+
+    for (let i = 0; i < questions.length; i++) {
+      if (userAnswers[i] === questions[i].answer) {
+        correct++;
+      } else {
+        wrong++;
+      }
+    }
+
+    let percentage = Math.round((correct / questions.length) * 100);
+
+    // Populate user details on the result slip
+    document.getElementById("res-fullname").innerText = currentUser.fullName;
+    document.getElementById("res-regno").innerText = currentUser.regNo;
+    document.getElementById("res-email").innerText = currentUser.email;
+
+    document.getElementById("correct-count").innerText = correct;
+    document.getElementById("wrong-count").innerText = wrong;
+    document.getElementById("score-percent").innerText = percentage + "%";
+    document.getElementById("final-score-box").innerText = "AGGREGATE SCORE: " + correct + " / 40 (" + percentage + "%)";
+
+    document.getElementById("exam-header").style.display = "none";
+    document.getElementById("exam-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "block";
+  }
+
+  displayQuestion();
+  startTimer();
+</script>
+
+</body>
+</html>
